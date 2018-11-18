@@ -1,28 +1,48 @@
+/* global google */
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Map from './Components/Map'
 import './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+
+    state = {
+        map: {}
+    }
+
+    componentDidMount () {
+        window.initMap = this.initMap;
+        this.createScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyDVOph5H2ON8d7d3maVA_t9UkTTxkRhuZA&callback=initMap');
+
+    }
+
+    // chamar a função initMap
+    initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8
+        });
+
+    }
+
+    render() {
+        return (
+            <Map />
+        )
+    }
+
+    createScript(src) {
+        // Selecionar ponto de referencia
+        var ref = window.document.getElementsByTagName("script")[0];
+        // criar o script
+        var script = window.document.createElement("script");
+        // definir os atributos
+        script.src = src;
+        script.async = true;
+
+        // inserir antes do primeiro script
+        ref.parentNode.insertBefore(script, ref);
+    }
 }
 
 export default App;
