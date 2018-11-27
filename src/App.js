@@ -8,10 +8,10 @@ import './App.css';
 class App extends Component {
 
     state = {
-        locations: Places ,
-        map: {},
-        markers: [],
-        query: '',
+        'locations': Places ,
+        'map': {},
+        'markers': [],
+        'query': '',
         'infoWindow': ''
     }
 
@@ -56,6 +56,7 @@ class App extends Component {
 
             this.state.markers.push(marker);
             this.setState({});
+
             bounds.extend(this.state.markers[i].position);
         }
     }
@@ -88,7 +89,6 @@ openInfoWindow(marker, infoWindow, map) {
         });
     }
 }
-
 
     createScript(src) {
         // Selecionar ponto de referencia
