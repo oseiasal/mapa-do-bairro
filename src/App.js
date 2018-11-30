@@ -10,7 +10,6 @@ class App extends Component {
         super(props);
         this.state = {
             'locations': Places,
-            'filteredLocation': [],
             'map': {},
             'markers': [],
             'query': '',

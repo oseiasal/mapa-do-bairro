@@ -3,31 +3,6 @@ import { PlaceItem } from './PlaceItem';
 import '../App.css';
 
 class Menu extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            query: '',
-            markers: [],
-            marcFiltered: []
-        }
-    }
-
-    updateQuery = (query, marc = []) => {
-        this.setState({query})
-
-        this.props.markers.filter(marcador => {
-            return marcador.title.toLowerCase().indexOf(query.toLowerCase()) > -1
-
-        }).map(marcador => {
-            return marc.push(marcador);
-        });
-
-        marc == undefined ? console.log("Não encontrado") : console.log("");
-
-        this.setState({marcFiltered: marc})
-    }
-
-
 
     render(){
         return (
