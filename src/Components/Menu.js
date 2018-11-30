@@ -13,8 +13,8 @@ class Menu extends React.Component {
     }
 
     updateQuery = (query, marc = []) => {
-
         this.setState({query})
+
         this.props.markers.filter(marcador => {
             return marcador.title.toLowerCase().indexOf(query.toLowerCase()) > -1
 
@@ -22,23 +22,25 @@ class Menu extends React.Component {
             return marc.push(marcador);
         });
 
-        marc == undefined ? console.log("Não encontrado") : console.log(marc);
+        marc == undefined ? console.log("Não encontrado") : console.log("");
 
         this.setState({marcFiltered: marc})
     }
+
+
 
     render(){
         return (
             <div id="menu" className="menu-option">
             <div className="button-container">
             <input className="button show-markers" type="text"
-            onChange={(event) => {this.updateQuery(event.target.value); }}>
+            onChange={(event) => {this.props.updateQuery(event.target.value); }}>
             </input>
             </div>
 
             <div className="list">
             <ul>
-            {this.state.query.length > 0 ? (this.state.marcFiltered.map((marker, index) => {
+            {this.props.query.length > 0 ? (this.props.marcFiltered.map((marker, index) => {
                 return <PlaceItem
                 infoWindow={this.props.infoWindow}
                 key={index}

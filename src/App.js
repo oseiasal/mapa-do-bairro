@@ -6,13 +6,16 @@ import { PrivateKey } from './data/UserKey';
 import './App.css';
 
 class App extends Component {
-
-    state = {
-        'locations': Places ,
-        'map': {},
-        'markers': [],
-        'query': '',
-        'infoWindow': ''
+    constructor(props) {
+        super(props);
+        this.state = {
+            'locations': Places,
+            'filteredLocation': [],
+            'map': {},
+            'markers': [],
+            'query': '',
+            'infoWindow': ''
+        }
     }
 
     componentDidMount () {
@@ -58,53 +61,104 @@ class App extends Component {
             this.setState({});
 
             bounds.extend(this.state.markers[i].position);
+
         }
+
     }
 
-render() {
+    renderMarkers(map, marker, query){
+        setTimeout(function () {
+            if (query.length == 0) {
+                marker.map(item => {
+                    return item.setMap(map)
+                })
+            }
+        }, 10);
 
-    return (
-        <section className="container">
-            <Menu
+
+        marker.map(marcador => {
+
+            if (marcador.title !== (query.toLowerCase().indexOf(query.toLowerCase()) > -1)) {
+                return marker.map(item => {
+                    return item.setMap(map)
+                });
+            }
+        })
+    }
+
+    updateQuery = (query, marc = []) => {
+        var self = this;
+        this.setState({query})
+        this.state.markers.filter(marcador => {
+            return marcador.title.toLowerCase().indexOf(query.toLowerCase()) > -1
+
+        }).map(marcador => {
+            return marc.push(marcador);
+        });
+
+        marc == undefined ? console.log("Não encontrado") : console.log('definido');
+
+        this.setState({marcFiltered: marc});
+
+        setTimeout(function () {
+            self.renderMarkers(self.state.map, self.state.marcFiltered, self.state.query)
+
+        }, 50);
+
+        this.state.markers.map(a => {
+            return a.setMap(null)
+        })
+
+    }
+
+    render() {
+
+        return (
+            <section className="container">
+
+            { <Menu
+                query={this.state.query}
+                marcFiltered={this.state.marcFiltered}
+                updateQuery={this.updateQuery.bind(this)}
                 openInfoWindow={this.openInfoWindow.bind(this)}
                 infoWindow={this.state.infoWindow}
                 markers={this.state.markers}
                 map={this.state.map}
-            />
-            <Map />
-        </section>
-    )
-}
+                />}
+                <Map />
+                </section>
+            )
+        }
 
-openInfoWindow(marker, infoWindow, map) {
-    if (infoWindow.marker !== marker) {
-        infoWindow.marker = marker;
-        infoWindow.setContent('<div>' + marker.title + '</div>');
-        infoWindow.open(map, marker);
-        this.state.map.setCenter(marker.getPosition());
-        this.state.map.panBy(0, -200);
+        openInfoWindow(marker, infoWindow, map) {
+            if (infoWindow.marker !== marker) {
+                infoWindow.marker = marker;
+                infoWindow.setContent('<div>' + marker.title + '</div>');
+                infoWindow.open(map, marker);
+                this.state.map.setCenter(marker.getPosition());
+                this.state.map.panBy(0, -200);
 
-        infoWindow.addListener('closeclick', () => {
-            infoWindow.setMarker = null;
-        });
+                infoWindow.addListener('closeclick', () => {
+                    infoWindow.setMarker = null;
+                });
+            }
+        }
+
+        createScript(src) {
+            // Selecionar ponto de referencia
+            var index = window.document.getElementsByTagName("script")[0];
+            // criar o script
+            var script = window.document.createElement("script");
+            // definir os atributos
+            script.src = src;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                alert("Erro ao carregar o mapa, verifique novamente.");
+            };
+            // inserir antes do primeiro script
+            index.parentNode.insertBefore(script, index);
+        }
     }
-}
 
-    createScript(src) {
-        // Selecionar ponto de referencia
-        var index = window.document.getElementsByTagName("script")[0];
-        // criar o script
-        var script = window.document.createElement("script");
-        // definir os atributos
-        script.src = src;
-        script.async = true;
-        script.defer = true;
-        script.onerror = () => {
-            alert("Erro ao carregar o mapa, verifique novamente.");
-        };
-        // inserir antes do primeiro script
-        index.parentNode.insertBefore(script, index);
-    }
-}
-
-export default App;
+    export default App;
