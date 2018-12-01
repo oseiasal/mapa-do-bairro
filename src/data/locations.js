@@ -1,36 +1,44 @@
 export const Places = [{
-    title: 'Frequência Fit',
+    title: 'CIEE',
     location: {
-        lat: -23.438605,
-        lng: -46.384569
+        lat: -23.467149,
+        lng: -46.527667
     },
-    telefone: '(11) 97581-7575'
+    id:'4f47974ce4b0683d4e7d87cf'
 }, {
-    title: '4You Academia',
+    title: 'Maria Cereja',
     location: {
-        lat: -23.440227,
-        lng: -46.385222
+        lat: -23.4610524,
+        lng: -46.5302547
     },
-    telefone: '(11) 98056-7125'
+    id:'4b2ee880f964a52023e824e3'
 }, {
-    title: 'Supermercados X',
+    title: 'Bosque Maia',
     location: {
-        lat: -23.438605,
-        lng: -46.384144
+        lat: -23.4575191,
+        lng: -46.5298792
     },
-    telefone: '(11) 97563-5872'
+    id:'4bb2aec24019a5937f3637b8'
 }, {
-    title: 'Mercado Villa Real',
+    title: 'Wow Burger',
     location: {
-        lat: -23.441339,
-        lng: -46.383498
+        lat: -23.4577258,
+        lng: -46.5302654
     },
-    telefone: '(11) 92147-0022'
+    id:'4b2ed079f964a52009e724e3'
+},
+{
+    title: 'Winners Academia',
+    location: {
+        lat: -23.4599304,
+        lng: -46.536059
+    },
+    id:'4d7b98e96152b60cdc578126'
 }, {
-    title: 'Canil Municipal',
+    title: 'ACM',
     location: {
-        lat: -23.441019,
-        lng: -46.383458
+        lat: -23.4635817,
+        lng: -46.5338167
     },
-    telefone: '(11) 92147-0022'
+    id:'4c7c43107a856dcbb7cde1a7'
 }]
