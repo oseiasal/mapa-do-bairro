@@ -2,45 +2,130 @@
     box-sizing: border-box;
 }
 
-body {
-    background-color: rgb(18, 15, 27);
+ul {
+    list-style: none;
+    padding: 0px;
 }
 
-.button {
+.list li {
     padding: 5px;
-    margin: 5px;
 }
+.list li:hover {
 
-.button-container {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    justify-content: space-between;
-}
-
-.container {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    position: relative;
-    width: 1200px;
-}
-
-.list {
+    background: red;
+    cursor:pointer;
 
 }
 
-#menu {
+.list::before {
+    content: "";
+    background: red;
+    width: 100%;
+    height: 3px;
+    display: block;
+    margin-top: 10px;
+}
+
+.list::after {
+    content: "";
+    background: red;
+    width: 100%;
+    height: 3px;
+    display: block;
+    margin-top: 10px;
+}
+
+.show-markers {
+    width: 100%;
+    border: solid black 1px;
+    padding: 10px;
+}
+
+.menu-option {
+    z-index: 2;
+    position: fixed;
     padding: 10px;
     background-color: rgb(255, 255, 255);
-    width: 25%;
-    height: 625px;
-    border:solid rgb(188, 198, 192) 1px;
-    /* display: flex; */
+    display: flex;
+    flex-direction: column;
+}
+
+.menuToggle {
+    display: block;
+    position: relative;
+    top: 0px;
+    z-index: 1;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.menuToggle .checkbox {
+    display: block;
+    width: 40px;
+    height: 32px;
+    position: absolute;
+    top: -7px;
+    left: -5px;
+    cursor: pointer;
+    opacity: 0;
+    /* hide this */
+    z-index: 2;
+    /* and place it over the hamburger */
+    -webkit-touch-callout: none;
+}
+
+.menuToggle span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: #3cda0a;
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0),
+        background 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0),
+        opacity 0.55s ease;
+}
+
+.menuToggle span:first-child {
+    transform-origin: 0% 0%;
+}
+
+.menuToggle span:nth-last-child(2) {
+    transform-origin: 0% 100%;
+}
+
+.menuToggle .checkbox:checked~span {
+    opacity: 1;
+    transform: rotate(45deg) translate(-2px, -1px);
+    background: #232323;
+}
+
+.menuToggle .checkbox:checked~span:nth-last-child(3) {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.2, 0.2);
+}
+
+.menuToggle .checkbox:checked~span:nth-last-child(2) {
+    transform: rotate(-45deg) translate(0, -1px);
+}
+
+.header {
+    background: black;
+    color: white;
+    font-size: 3em;
+    text-align: center;
+    padding: 10px;
 }
 
 #map {
-    border:solid rgb(188, 198, 192) 1px;
-    height: 625px;
-    width: 75%;
+    z-index: 0;
+    height: 600px;
+}
+
+.showing {
+    display: none;
+    top: 0;
 }
