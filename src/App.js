@@ -26,6 +26,7 @@ class App extends Component {
 
     // chamar a função initMap
     initMap = () => {
+
         document.getElementsByClassName('checkbox')[0].addEventListener('click', () => {
             document.getElementsByClassName('list')[0].classList.toggle('showing');
             document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
@@ -125,6 +126,7 @@ class App extends Component {
         return (
             <section className="container">
             <div className="header"> Mapa do Bairro </div>
+             <div>
              <Menu
                 query={this.state.query}
                 marcFiltered={this.state.marcFiltered}
@@ -135,7 +137,9 @@ class App extends Component {
                 map={this.state.map}
                 />
                 <Map />
-                </section>
+             </div>
+
+            </section>
             )
         }
 
@@ -145,7 +149,7 @@ class App extends Component {
                 infoWindow.setContent('<div>' + marker.title + '</div>');
                 infoWindow.open(map, marker);
                 this.state.map.setCenter(marker.getPosition());
-                this.state.map.panBy(0, -200);
+                this.state.map.panBy(0, 30);
 
                 infoWindow.addListener('closeclick', () => {
                     infoWindow.setMarker = null ;

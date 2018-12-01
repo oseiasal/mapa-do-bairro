@@ -10,11 +10,11 @@ ul {
 .list li {
     padding: 5px;
 }
+
 .list li:hover {
-
-    background: red;
-    cursor:pointer;
-
+    width: auto;
+    color: red;
+    cursor: pointer;
 }
 
 .list::before {
@@ -43,7 +43,8 @@ ul {
 
 .menu-option {
     z-index: 2;
-    position: fixed;
+    position: absolute;
+    margin: 10px;
     padding: 10px;
     background-color: rgb(255, 255, 255);
     display: flex;
@@ -68,9 +69,7 @@ ul {
     left: -5px;
     cursor: pointer;
     opacity: 0;
-    /* hide this */
     z-index: 2;
-    /* and place it over the hamburger */
     -webkit-touch-callout: none;
 }
 
@@ -84,9 +83,7 @@ ul {
     border-radius: 3px;
     z-index: 1;
     transform-origin: 4px 0px;
-    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0),
-        background 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0),
-        opacity 0.55s ease;
+    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0), background 0.5s cubic-bezier(0.77, 0.2, 0.55, 1.0), opacity 0.55s ease;
 }
 
 .menuToggle span:first-child {
@@ -113,6 +110,8 @@ ul {
 }
 
 .header {
+    position: relative;
+    z-index: 10;
     background: black;
     color: white;
     font-size: 3em;
@@ -121,6 +120,8 @@ ul {
 }
 
 #map {
+    margin-top: 5px;
+    margin-bottom: 20px;
     z-index: 0;
     height: 600px;
 }
@@ -128,4 +129,15 @@ ul {
 .showing {
     display: none;
     top: 0;
+}
+
+.header-hidden {
+    height: 10px;
+}
+
+@media screen and (max-width:800px) {
+    .menu-option {
+        z-index: 2;
+        position: relative;
+    }
 }
