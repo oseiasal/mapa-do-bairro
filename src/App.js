@@ -3,6 +3,8 @@ import Map from './Components/Map';
 import Menu from './Components/Menu';
 import { Places } from './data/locations';
 import { PrivateKey } from './data/UserKey';
+import { ClienteID } from './data/UserKey';
+import { ClientSecret } from './data/UserKey';
 import './App.css';
 
 class App extends Component {
@@ -30,8 +32,8 @@ class App extends Component {
         this.setState({'infoWindow': infoWindow})
 
         var map = new window.google.maps.Map(document.getElementById('map'), {
-            center: { lat: -23.440246, lng: -46.3828834},
-            zoom: 16,
+            center: { lat: -23.4671489, lng: -46.5276668},
+            zoom: 15,
             mapTypeControl: false
         });
         this.setState({'map': map});
@@ -42,9 +44,11 @@ class App extends Component {
             // Get the position from the location array.
             var position = this.state.locations[i].location;
             var title = this.state.locations[i].title;
+            var squareId = this.state.locations[i].id;
 
             // Create a marker per location, and put into markers array.
             var marker = new window.google.maps.Marker({
+                squareId: squareId,
                 map: map,
                 position: position,
                 title: title,
@@ -69,6 +73,7 @@ class App extends Component {
         setTimeout(function () {
             if (query.length == 0) {
                 marker.map(item => {
+
                     return item.setMap(map)
                 })
             }
@@ -138,9 +143,31 @@ class App extends Component {
                 this.state.map.panBy(0, -200);
 
                 infoWindow.addListener('closeclick', () => {
-                    infoWindow.setMarker = null;
+                    infoWindow.setMarker = null ;
                 });
+
+
+                this.chamaApiFourSquare(marker)
             }
+
+        }
+
+        chamaApiFourSquare(marker){
+            fetch('https://api.foursquare.com/v2/venues/'+marker.squareId+'?&client_id='+ClienteID+'&client_secret='+ ClientSecret +'&v=20131212')
+            .then((response) => {
+                return (response).json().then(dados => {
+
+                    if (dados.response.venue != undefined) {
+                        var title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div><br>'
+                        var foto = '<img src=' + dados.response.venue.bestPhoto.prefix +'320x200'+ dados.response.venue.bestPhoto.suffix + '><br>'
+                        var local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div><br>'
+                        var street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address == undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div><br>'
+                        var hereNoe = '<div> <b>Pessoas no lugar:</b> ' + dados.response.venue.hereNow.summary + '</div><br>'
+                        var foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
+                        return this.state.infoWindow.setContent(title + local + street + hereNoe + foto + foursquare)
+                    }
+                })
+            })
         }
 
         createScript(src) {
