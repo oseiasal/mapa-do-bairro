@@ -6,14 +6,23 @@ class Menu extends React.Component {
 
     render(){
         return (
-            <div id="menu" className="menu-option">
-            <div className="button-container">
-            <input className="button show-markers" type="text"
+            <div className="menu-option">
+            <div className="search-container">
+            <div className="menuToggle">
+            <input className="checkbox" type="checkbox" />
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <div></div>
+
+            </div>
+            <input placeholder="Digite o nome do lugar" className="show-markers showing" type="text"
             onChange={(event) => {this.props.updateQuery(event.target.value); }}>
             </input>
-            </div>
+            
 
-            <div className="list">
+            <div className="list showing">
             <ul>
             {this.props.query.length > 0 ? (this.props.marcFiltered.map((marker, index) => {
                 return <PlaceItem
@@ -33,8 +42,9 @@ class Menu extends React.Component {
             </ul>
             </div>
             </div>
-        )
-    }
+            </div>
+    )
+}
 }
 
 export default Menu;
