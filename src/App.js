@@ -26,6 +26,11 @@ class App extends Component {
 
     // chamar a função initMap
     initMap = () => {
+        document.getElementsByClassName('checkbox')[0].addEventListener('click', () => {
+            document.getElementsByClassName('list')[0].classList.toggle('showing');
+            document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
+        })
+
         var self = this;
 
         var infoWindow = new window.google.maps.InfoWindow();
@@ -119,8 +124,8 @@ class App extends Component {
 
         return (
             <section className="container">
-
-            { <Menu
+            <div className="header"> Mapa do Bairro </div>
+             <Menu
                 query={this.state.query}
                 marcFiltered={this.state.marcFiltered}
                 updateQuery={this.updateQuery.bind(this)}
@@ -128,7 +133,7 @@ class App extends Component {
                 infoWindow={this.state.infoWindow}
                 markers={this.state.markers}
                 map={this.state.map}
-                />}
+                />
                 <Map />
                 </section>
             )
@@ -156,6 +161,12 @@ class App extends Component {
             fetch('https://api.foursquare.com/v2/venues/'+marker.squareId+'?&client_id='+ClienteID+'&client_secret='+ ClientSecret +'&v=20131212')
             .then((response) => {
                 return (response).json().then(dados => {
+                    if (dados.meta.code !== 400) {
+                        var title = '<div><strong>' + marker.title + '</strong></div></br>';
+                        var error = dados.meta.errorDetail;
+                        return this.state.infoWindow.setContent(title + '<div> Não foi possível acessar a API do foursquare.<br> <br> <code>Erro: '+ error +' </code></div>')
+
+                    }
 
                     if (dados.response.venue != undefined) {
                         var title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div><br>'
