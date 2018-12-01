@@ -181,8 +181,8 @@ class App extends Component {
                         var foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
                         return this.state.infoWindow.setContent(title + local + street + hereNoe + foto + foursquare)
                     }
-                })
-            })
+                }).catch(error => {return console.log(error)})
+            }).catch(error => {return console.log(error)})
         }
 
         createScript(src) {
