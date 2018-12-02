@@ -1,13 +1,7 @@
 {
   "name": "mapa-do-bairro",
   "version": "0.1.0",
-<<<<<<< HEAD
   "homepage": "http://oseiasal.github.io/mapa-do-bairro",
-||||||| merged common ancestors
-  "homepage" : "http://oseiasal.github.io/mapa-do-bairro",
-=======
-  "homepage" : "http://oseiasal.github.io/mapa-do-bairro/build",
->>>>>>> e5b44daa3275693226841b3b3e081a3783605a33
   "private": true,
   "dependencies": {
     "gh-pages": "^2.0.1",
