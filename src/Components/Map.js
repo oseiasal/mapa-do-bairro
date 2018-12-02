@@ -3,8 +3,10 @@ import React from 'react';
  class Map extends React.Component {
     render (){
         return (
-            <div id="map" className="map"></div>
-        )
+            <main>
+                <div id="map" role="application" aria-label="Mapa da Cidade de Guarulhos" className="map"></div>
+            </main>        
+)
     }
 }
 

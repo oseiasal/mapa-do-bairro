@@ -24,6 +24,12 @@ class App extends Component {
         this.createScript('https://maps.googleapis.com/maps/api/js?key=' + PrivateKey + '&callback=initMap');
     }
 
+    openMenu(){
+        document.getElementsByClassName('list')[0].classList.toggle('showing');
+        document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
+    }
+
+
     // chamar a função initMap
     initMap = () => {
 
@@ -124,10 +130,11 @@ class App extends Component {
     render() {
 
         return (
-            <section className="container">
-            <div className="header"> Mapa do Bairro </div>
-             <div>
+            <div className="container">
+            <header className="header"> Mapa do Bairro </header>
+             <nav>
              <Menu
+                openMenu={this.openMenu.bind(this)}
                 query={this.state.query}
                 marcFiltered={this.state.marcFiltered}
                 updateQuery={this.updateQuery.bind(this)}
@@ -136,10 +143,11 @@ class App extends Component {
                 markers={this.state.markers}
                 map={this.state.map}
                 />
+                </nav>
+                
                 <Map />
-             </div>
 
-            </section>
+            </div>
             )
         }
 
@@ -162,10 +170,10 @@ class App extends Component {
         }
 
         chamaApiFourSquare(marker){
-            fetch('https://api.foursquare.com/v2/venues/'+marker.squareId+'?&client_id='+ClienteID+'&client_secret='+ ClientSecret +'&v=20131212')
+            fetch('https://api.foursquare.com/v2/venues/'+ marker.squareId +'?&client_id='+ ClienteID +'&client_secret='+ ClientSecret +'&v=20131212')
             .then((response) => {
-                return (response).json().then(dados => {
-                    if (dados.meta.code !== 400) {
+                return response.json().then(dados => {
+                    if (dados.meta.code !== 200) {
                         var title = '<div><strong>' + marker.title + '</strong></div></br>';
                         var error = dados.meta.errorDetail;
                         return this.state.infoWindow.setContent(title + '<div> Não foi possível acessar a API do foursquare.<br> <br> <code>Erro: '+ error +' </code></div>')
@@ -173,16 +181,19 @@ class App extends Component {
                     }
 
                     if (dados.response.venue != undefined) {
-                        var title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div><br>'
-                        var foto = '<img src=' + dados.response.venue.bestPhoto.prefix +'320x200'+ dados.response.venue.bestPhoto.suffix + '><br>'
-                        var local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div><br>'
-                        var street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address == undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div><br>'
-                        var hereNoe = '<div> <b>Pessoas no lugar:</b> ' + dados.response.venue.hereNow.summary + '</div><br>'
+                        var title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div>'
+                        // var foto = '<img src=' + dados.response.venue.bestPhoto.prefix +'50x50'+ dados.response.venue.bestPhoto.suffix + '>'
+                        var local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div>'
+                        var street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address == undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div>'
+                        var hereNoe = '<div> <b>Gostaram do lugar:</b> ' + (dados.response.venue.likes.summary == undefined ? 'Sem informação :(': dados.response.venue.likes.summary) + '</div>'
+                        var telefone = '<div> <b>Telefone:</b> ' + (dados.response.venue.contact.formattedPhone == undefined ? 'Sem telefone' : dados.response.venue.contact.formattedPhone) + '</div>'
                         var foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
-                        return this.state.infoWindow.setContent(title + local + street + hereNoe + foto + foursquare)
+                        return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone + '<br>' +foursquare)
                     }
-                }).catch(error => {return console.log(error)})
-            }).catch(error => {return console.log(error)})
+                })
+            }).catch((erro) => {
+                return window.alert(erro)
+            })
         }
 
         createScript(src) {

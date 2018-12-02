@@ -9,11 +9,8 @@ export class PlaceItem extends React.Component {
 
     render () {
         return (
-            <li>
-                <span
-                onClick={this.callOpenInfoWindow.bind(this)}>
+            <li role="button" tabIndex="0" onClick={this.callOpenInfoWindow.bind(this)} onKeyPress={this.callOpenInfoWindow.bind(this)}>
                 {this.props.marker.title}
-                </span>
             </li>
         )
     }
