@@ -1,0 +1,8 @@
+{
+  "short_name": "Mapa do Bairro",
+  "name": "Mapa do Bairro: Projeto Udacity",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
