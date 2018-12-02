@@ -1,9 +1,10 @@
 {
   "name": "mapa-do-bairro",
   "version": "0.1.0",
-  "homepage" : "http://oseiasal.github.io/mapa-do-bairro",
+  "homepage": "http://oseiasal.github.io/mapa-do-bairro",
   "private": true,
   "dependencies": {
+    "gh-pages": "^2.0.1",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-scripts": "^2.1.1"
