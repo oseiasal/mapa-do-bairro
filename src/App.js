@@ -144,7 +144,7 @@ class App extends Component {
                 map={this.state.map}
                 />
                 </nav>
-                
+
                 <Map />
 
             </div>
@@ -169,6 +169,7 @@ class App extends Component {
 
         }
 
+// A função pega a ID do marcador e passa para a url do foursquare para obter dados sobre o lugar
         chamaApiFourSquare(marker){
             fetch('https://api.foursquare.com/v2/venues/'+ marker.squareId +'?&client_id='+ ClienteID +'&client_secret='+ ClientSecret +'&v=20131212')
             .then((response) => {
@@ -196,6 +197,8 @@ class App extends Component {
             })
         }
 
+
+// Função criada para colocar o script do google no html
         createScript(src) {
             // Selecionar ponto de referencia
             var index = window.document.getElementsByTagName("script")[0];
