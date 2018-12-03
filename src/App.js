@@ -38,28 +38,28 @@ class App extends Component {
             document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
         })
 
-        var self = this;
+        let self = this;
 
-        var infoWindow = new window.google.maps.InfoWindow();
+        let infoWindow = new window.google.maps.InfoWindow();
         this.setState({'infoWindow': infoWindow})
 
-        var map = new window.google.maps.Map(document.getElementById('map'), {
+        let map = new window.google.maps.Map(document.getElementById('map'), {
             center: { lat: -23.4671489, lng: -46.5276668},
             zoom: 15,
             mapTypeControl: false
         });
         this.setState({'map': map});
 
-        var bounds = new window.google.maps.LatLngBounds();
+        let bounds = new window.google.maps.LatLngBounds();
 
-        for (var i = 0; i < this.state.locations.length; i++) {
+        for (let i = 0; i < this.state.locations.length; i++) {
             // Get the position from the location array.
-            var position = this.state.locations[i].location;
-            var title = this.state.locations[i].title;
-            var squareId = this.state.locations[i].id;
+            let position = this.state.locations[i].location;
+            let title = this.state.locations[i].title;
+            let squareId = this.state.locations[i].id;
 
             // Create a marker per location, and put into markers array.
-            var marker = new window.google.maps.Marker({
+            let marker = new window.google.maps.Marker({
                 squareId: squareId,
                 map: map,
                 position: position,
@@ -83,7 +83,7 @@ class App extends Component {
 
     renderMarkers(map, marker, query){
         setTimeout(function () {
-            if (query.length == 0) {
+            if (query.length === 0) {
                 marker.map(item => {
 
                     return item.setMap(map)
@@ -103,7 +103,7 @@ class App extends Component {
     }
 
     updateQuery = (query, marc = []) => {
-        var self = this;
+        let self = this;
         this.setState({query})
         this.state.markers.filter(marcador => {
             return marcador.title.toLowerCase().indexOf(query.toLowerCase()) > -1
@@ -112,7 +112,7 @@ class App extends Component {
             return marc.push(marcador);
         });
 
-        marc == undefined ? console.log("Não encontrado") : console.log('definido');
+        // marc == undefined ? console.log("Não encontrado") : console.log('Locais carregados');
 
         this.setState({marcFiltered: marc});
 
@@ -152,15 +152,24 @@ class App extends Component {
         }
 
         openInfoWindow(marker, infoWindow, map) {
+
             if (infoWindow.marker !== marker) {
                 infoWindow.marker = marker;
                 infoWindow.setContent('<div>' + marker.title + '</div>');
                 infoWindow.open(map, marker);
+                marker.setAnimation(window.google.maps.Animation.BOUNCE);
                 this.state.map.setCenter(marker.getPosition());
                 this.state.map.panBy(0, 30);
 
+                setTimeout(function () {
+                    infoWindow.marker.setAnimation(null);
+                }, 1500);
+
                 infoWindow.addListener('closeclick', () => {
-                    infoWindow.setMarker = null ;
+                    infoWindow.close();
+                    infoWindow.marker.setMarker = null;
+
+
                 });
 
 
@@ -175,22 +184,24 @@ class App extends Component {
             .then((response) => {
                 return response.json().then(dados => {
                     if (dados.meta.code !== 200) {
-                        var title = '<div><strong>' + marker.title + '</strong></div></br>';
-                        var error = dados.meta.errorDetail;
-                        return this.state.infoWindow.setContent(title + '<div> Não foi possível acessar a API do foursquare.<br> <br> <code>Erro: '+ error +' </code></div>')
+                        let title = '<div><strong>' + marker.title + '</strong></div></br>';
+                        let error = dados.meta.errorDetail;
+                        return this.state.infoWindow.setContent(title + '<div>Loading... :)</div>')
 
                     }
 
-                    if (dados.response.venue != undefined) {
-                        var title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div>'
-                        // var foto = '<img src=' + dados.response.venue.bestPhoto.prefix +'50x50'+ dados.response.venue.bestPhoto.suffix + '>'
-                        var local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div>'
-                        var street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address == undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div>'
-                        var hereNoe = '<div> <b>Gostaram do lugar:</b> ' + (dados.response.venue.likes.summary == undefined ? 'Sem informação :(': dados.response.venue.likes.summary) + '</div>'
-                        var telefone = '<div> <b>Telefone:</b> ' + (dados.response.venue.contact.formattedPhone == undefined ? 'Sem telefone' : dados.response.venue.contact.formattedPhone) + '</div>'
-                        var foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
-                        return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone + '<br>' +foursquare)
+                    if (dados.response.venue !== undefined) {
+                        let title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div>'
+                        let local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div>'
+                        let street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address === undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div>'
+                        let hereNoe = '<div> <b>Gostaram do lugar:</b> ' + (dados.response.venue.likes.summary === undefined ? 'Sem informação :(': dados.response.venue.likes.summary) + '</div>'
+                        let telefone = '<div> <b>Telefone:</b> ' + (dados.response.venue.contact.formattedPhone === undefined ? 'Sem telefone' : dados.response.venue.contact.formattedPhone) + '</div>'
+                        let site = '<div> <b>Site:</b> ' + (dados.response.venue.url === undefined ? 'indisponível no momento' : '<a href=' + dados.response.venue.url + '>'+dados.response.venue.url+'</a>' + '</div>')
+                        let foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
+                        return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone +'<br>'+ site +'<br>' +foursquare)
                     }
+                }).catch((erro) => {
+                    return console.log(erro)
                 })
             }).catch((erro) => {
                 return window.alert(erro)
@@ -201,16 +212,14 @@ class App extends Component {
 // Função criada para colocar o script do google no html
         createScript(src) {
             // Selecionar ponto de referencia
-            var index = window.document.getElementsByTagName("script")[0];
+            let index = window.document.getElementsByTagName("script")[0];
             // criar o script
-            var script = window.document.createElement("script");
+            let script = window.document.createElement("script");
             // definir os atributos
             script.src = src;
             script.async = true;
             script.defer = true;
-            script.onerror = () => {
-                alert("Erro ao carregar o mapa, verifique novamente.");
-            };
+
             // inserir antes do primeiro script
             index.parentNode.insertBefore(script, index);
         }
