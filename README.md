@@ -7,6 +7,8 @@ Esse projeto foi criado em React utilizando a ferramenta [Create React App](http
 Para utilizar esse projeto, você deve clonar este repositório em sua máquina e instalar as dependências.
 Utilize os comandos `npm install` para instalar as dependências e `npm start` para iniciar o servidor local em http://localhost:3000.
 
+A aplicação possui um serviceWorker, porém só é instalado ao fazer o build do projeto.
+
 ## Inserção de novos locais
 
 Para inserir novos lugares no mapa, basta abrir o arquivo [location.js](src/data/locations.js) e inserir as informações em `Places`

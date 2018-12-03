@@ -2,8 +2,6 @@ import React from 'react';
 import  PlaceItem  from './PlaceItem';
 import '../App.css';
 
-
-
 const Menu = ({openMenu, updateQuery, query, marcFiltered, infoWindow, openInfoWindow, markers}) => {
 
         return (
