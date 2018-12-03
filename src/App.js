@@ -24,11 +24,11 @@ class App extends Component {
         this.createScript('https://maps.googleapis.com/maps/api/js?key=' + PrivateKey + '&callback=initMap');
     }
 
+    // Esta função faz altera as classes do menu para exibir as listas
     openMenu(){
         document.getElementsByClassName('list')[0].classList.toggle('showing');
         document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
     }
-
 
     // chamar a função initMap
     initMap = () => {
@@ -53,12 +53,11 @@ class App extends Component {
         let bounds = new window.google.maps.LatLngBounds();
 
         for (let i = 0; i < this.state.locations.length; i++) {
-            // Get the position from the location array.
             let position = this.state.locations[i].location;
             let title = this.state.locations[i].title;
             let squareId = this.state.locations[i].id;
 
-            // Create a marker per location, and put into markers array.
+            // Criar um marcador por localização, e colocá-los em uma vetor de marcadores.
             let marker = new window.google.maps.Marker({
                 squareId: squareId,
                 map: map,
@@ -68,32 +67,35 @@ class App extends Component {
                 id: i
             });
 
+            // Adicionar escuta de click para abrir a infoWindow
             marker.addListener('click', function() {
                 self.openInfoWindow(this, self.state.infoWindow, this.map);
             });
 
-            this.state.markers.push(marker);
-            this.setState({});
+            // Adicionar os marcadores ao state
+            this.setState( (markers) => {
+                markers = this.state.markers.push(marker);
+                return markers;
+            });
 
             bounds.extend(this.state.markers[i].position);
-
         }
-
     }
 
+    // Ao pesquisar os lugares, esta função irá manipular os marcadores no mapa
     renderMarkers(map, marker, query){
+
+        // Manipula os marcadores para que eles tenham um delay ao serem pesquisados
         setTimeout(function () {
             if (query.length === 0) {
                 marker.map(item => {
-
                     return item.setMap(map)
                 })
             }
         }, 10);
 
-
+        // Filtra os marcadores baseado no texto da query (state)
         marker.map(marcador => {
-
             if (marcador.title !== (query.toLowerCase().indexOf(query.toLowerCase()) > -1)) {
                 return marker.map(item => {
                     return item.setMap(map)
@@ -102,6 +104,7 @@ class App extends Component {
         })
     }
 
+    // Esta função atualiza a query
     updateQuery = (query, marc = []) => {
         let self = this;
         this.setState({query})
@@ -112,14 +115,12 @@ class App extends Component {
             return marc.push(marcador);
         });
 
-        // marc == undefined ? console.log("Não encontrado") : console.log('Locais carregados');
-
         this.setState({marcFiltered: marc});
 
+        // A função renderMarkers só será iniciada após os 100ms
         setTimeout(function () {
             self.renderMarkers(self.state.map, self.state.marcFiltered, self.state.query)
-
-        }, 50);
+        }, 100);
 
         this.state.markers.map(a => {
             return a.setMap(null)
@@ -151,6 +152,7 @@ class App extends Component {
             )
         }
 
+        // Esta função abre as InfoWindow dos marcadores
         openInfoWindow(marker, infoWindow, map) {
 
             if (infoWindow.marker !== marker) {
@@ -161,6 +163,7 @@ class App extends Component {
                 this.state.map.setCenter(marker.getPosition());
                 this.state.map.panBy(0, 30);
 
+                // Após 1,5 segundos, a animação do marcador é desativada
                 setTimeout(function () {
                     infoWindow.marker.setAnimation(null);
                 }, 1500);
@@ -168,14 +171,10 @@ class App extends Component {
                 infoWindow.addListener('closeclick', () => {
                     infoWindow.close();
                     infoWindow.marker.setMarker = null;
-
-
                 });
 
-
-                this.chamaApiFourSquare(marker)
+                this.chamaApiFourSquare(marker);
             }
-
         }
 
 // A função pega a ID do marcador e passa para a url do foursquare para obter dados sobre o lugar
@@ -201,15 +200,14 @@ class App extends Component {
                         return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone +'<br>'+ site +'<br>' +foursquare)
                     }
                 }).catch((erro) => {
-                    return console.log(erro)
+                    return console.log(erro);
                 })
             }).catch((erro) => {
-                return window.alert(erro)
+                return console.log(erro);
             })
         }
 
-
-// Função criada para colocar o script do google no html
+        // Função criada para colocar o script do google no html
         createScript(src) {
             // Selecionar ponto de referencia
             let index = window.document.getElementsByTagName("script")[0];
