@@ -1,17 +1,18 @@
 import React from 'react';
 
-export class PlaceItem extends React.Component {
+const PlaceItem = ({openInfoWindow, infoWindow, marker}) => {
 
-    callOpenInfoWindow = (context) => {
-        this.props.openInfoWindow(this.props.marker, this.props.infoWindow, this.props.marker.map);
+    // Esta função chama o InfoWindow
+    const callOpenInfoWindow = (context) => {
+        openInfoWindow(marker, infoWindow, marker.map);
 
     }
 
-    render () {
         return (
-            <li role="button" tabIndex="0" onClick={this.callOpenInfoWindow.bind(this)} onKeyPress={this.callOpenInfoWindow.bind(this)}>
-                {this.props.marker.title}
+            <li role="button" tabIndex="0" onClick={callOpenInfoWindow.bind(this)} onKeyPress={callOpenInfoWindow.bind(this)}>
+                {marker.title}
             </li>
         )
-    }
 }
+
+export default PlaceItem
