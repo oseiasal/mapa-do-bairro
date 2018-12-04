@@ -3,6 +3,7 @@ import Map from './Components/Map';
 import Menu from './Components/Menu';
 import { Places } from './data/locations';
 import { PrivateKey } from './data/UserKey';
+import ErrorBoundary from './catch/ErrorBoundary';
 import { ClienteID } from './data/UserKey';
 import { ClientSecret } from './data/UserKey';
 import './App.css';
@@ -22,25 +23,39 @@ class App extends Component {
     componentDidMount () {
         window.initMap = this.initMap;
         this.createScript('https://maps.googleapis.com/maps/api/js?key=' + PrivateKey + '&callback=initMap');
+        window.gm_authFailure = this.gm_authFailure;
+    }
+
+     gm_authFailure() {
+        alert("Estamos com um problema para carregar o mapa.\nTente novamente mais tarde.");
     }
 
     // Esta função faz altera as classes do menu para exibir as listas
     openMenu(){
-        document.getElementsByClassName('list')[0].classList.toggle('showing');
-        document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
+
+        try {
+            document.getElementsByClassName('list')[0].classList.toggle('showing');
+            document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     // chamar a função initMap
     initMap = () => {
 
-        document.getElementsByClassName('checkbox')[0].addEventListener('click', () => {
-            document.getElementsByClassName('list')[0].classList.toggle('showing');
-            document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
-        })
+        try {
+            document.getElementsByClassName('checkbox')[0].addEventListener('click', () => {
+                document.getElementsByClassName('list')[0].classList.toggle('showing');
+                document.getElementsByClassName('show-markers')[0].classList.toggle('showing');
+            })
+        } catch (e) {
+            console.log(e)
+        }
 
         let self = this;
 
-        let infoWindow = new window.google.maps.InfoWindow();
+        let infoWindow = new window.google.maps.InfoWindow({maxWidth: 350, maxHeight: 400});
         this.setState({'infoWindow': infoWindow})
 
         let map = new window.google.maps.Map(document.getElementById('map'), {
@@ -80,6 +95,7 @@ class App extends Component {
 
             bounds.extend(this.state.markers[i].position);
         }
+
     }
 
     // Ao pesquisar os lugares, esta função irá manipular os marcadores no mapa
@@ -101,6 +117,7 @@ class App extends Component {
                     return item.setMap(map)
                 });
             }
+            return 0;
         })
     }
 
@@ -128,99 +145,103 @@ class App extends Component {
 
     }
 
-    render() {
+    // Esta função abre as InfoWindow dos marcadores
+    openInfoWindow(marker, infoWindow, map) {
+        infoWindow.marker = null;
+        infoWindow.close();
 
-        return (
-            <div className="container">
-            <header className="header"> Mapa do Bairro </header>
-             <nav>
-             <Menu
-                openMenu={this.openMenu.bind(this)}
-                query={this.state.query}
-                marcFiltered={this.state.marcFiltered}
-                updateQuery={this.updateQuery.bind(this)}
-                openInfoWindow={this.openInfoWindow.bind(this)}
-                infoWindow={this.state.infoWindow}
-                markers={this.state.markers}
-                map={this.state.map}
-                />
-                </nav>
+        if (infoWindow.marker !== marker) {
+            infoWindow.marker = marker;
+            infoWindow.setContent('<div>' + marker.title + '</div>');
+            infoWindow.open(map, marker);
+            marker.setAnimation(window.google.maps.Animation.BOUNCE);
+            this.state.map.setCenter(marker.getPosition());
+            this.state.map.panBy(0, 30);
 
-                <Map />
+            // Após 1,5 segundos, a animação do marcador é desativada
+            setTimeout(function () {
+                infoWindow.marker.setAnimation(null);
+            }, 1500);
 
-            </div>
-            )
+            infoWindow.addListener('closeclick', () => {
+                infoWindow.close();
+                infoWindow.marker.setMarker = null;
+            });
+            this.callFoursSquareInfos(marker);
         }
+    }
 
-        // Esta função abre as InfoWindow dos marcadores
-        openInfoWindow(marker, infoWindow, map) {
+    // A função pega a ID do marcador e passa para a url do foursquare para obter dados sobre o lugar
 
-            if (infoWindow.marker !== marker) {
-                infoWindow.marker = marker;
-                infoWindow.setContent('<div>' + marker.title + '</div>');
-                infoWindow.open(map, marker);
-                marker.setAnimation(window.google.maps.Animation.BOUNCE);
-                this.state.map.setCenter(marker.getPosition());
-                this.state.map.panBy(0, 30);
+    callFoursSquareInfos(marker){
+        fetch('https://api.foursquare.com/v2/venues/'+ marker.squareId +'?&client_id='+ ClienteID +'&client_secret='+ ClientSecret +'&v=20131212')
+        .then((response) => {
+            return response.json().then(dados => {
+                if (dados.meta.code !== 200) {
+                    let title = '<div><strong>' + marker.title + '</strong></div></br>';
+                    return this.state.infoWindow.setContent(title + '<div>Sem informações sobre o local, por enquanto. <br> Tente novamente mais tarde.</div>')
 
-                // Após 1,5 segundos, a animação do marcador é desativada
-                setTimeout(function () {
-                    infoWindow.marker.setAnimation(null);
-                }, 1500);
+                }
 
-                infoWindow.addListener('closeclick', () => {
-                    infoWindow.close();
-                    infoWindow.marker.setMarker = null;
-                });
-
-                this.chamaApiFourSquare(marker);
-            }
-        }
-
-// A função pega a ID do marcador e passa para a url do foursquare para obter dados sobre o lugar
-        chamaApiFourSquare(marker){
-            fetch('https://api.foursquare.com/v2/venues/'+ marker.squareId +'?&client_id='+ ClienteID +'&client_secret='+ ClientSecret +'&v=20131212')
-            .then((response) => {
-                return response.json().then(dados => {
-                    if (dados.meta.code !== 200) {
-                        let title = '<div><strong>' + marker.title + '</strong></div></br>';
-                        let error = dados.meta.errorDetail;
-                        return this.state.infoWindow.setContent(title + '<div>Loading... :)</div>')
-
-                    }
-
-                    if (dados.response.venue !== undefined) {
-                        let title = '<div style="font-size:18px">' + '<b>'+ marker.title + '</b></div>'
-                        let local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div>'
-                        let street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address === undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div>'
-                        let hereNoe = '<div> <b>Gostaram do lugar:</b> ' + (dados.response.venue.likes.summary === undefined ? 'Sem informação :(': dados.response.venue.likes.summary) + '</div>'
-                        let telefone = '<div> <b>Telefone:</b> ' + (dados.response.venue.contact.formattedPhone === undefined ? 'Sem telefone' : dados.response.venue.contact.formattedPhone) + '</div>'
-                        let site = '<div> <b>Site:</b> ' + (dados.response.venue.url === undefined ? 'indisponível no momento' : '<a href=' + dados.response.venue.url + '>'+dados.response.venue.url+'</a>' + '</div>')
-                        let foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
-                        return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone +'<br>'+ site +'<br>' +foursquare)
-                    }
-                }).catch((erro) => {
-                    return console.log(erro);
-                })
+                if (dados.response.venue !== undefined) {
+                    let title = '<div style="font-size:18px"><b>'+ marker.title + '</b></div>'
+                    let local = '<div> <b>Categoria</b>: ' + dados.response.venue.categories[0].pluralName + '</div>'
+                    let street = '<div> <b>Endereço:</b> ' + (dados.response.venue.location.address === undefined ? "Rua sem nome" : dados.response.venue.location.address) + '</div>'
+                    let hereNoe = '<div> <b>Gostaram do lugar:</b> ' + (dados.response.venue.likes.summary === undefined ? 'Sem informação': dados.response.venue.likes.summary) + '</div>'
+                    let telefone = '<div> <b>Telefone:</b> ' + (dados.response.venue.contact.formattedPhone === undefined ? 'Sem telefone' : dados.response.venue.contact.formattedPhone) + '</div>'
+                    let site = '<div> <b>Site:</b> ' + (dados.response.venue.url === undefined ? 'indisponível no momento <br>' : '<a href=' + dados.response.venue.url + '>'+dados.response.venue.url+'</a></div>')
+                    let foursquare = '<div><code> Elaborado com Api do 4Square</code></div>'
+                    return this.state.infoWindow.setContent(title + '<br>' + local + street + hereNoe + telefone + site +'<br>' + foursquare)
+                }
             }).catch((erro) => {
-                return console.log(erro);
+                return window.alert("Algo deu errado.\nPor favor, tente novamente mais tarde.");
             })
-        }
+        }).catch((erro) => {
+            return window.alert("Algo deu errado.\n Por favor, tente novamente mais tarde.");
+        })
+    }
 
-        // Função criada para colocar o script do google no html
-        createScript(src) {
-            // Selecionar ponto de referencia
-            let index = window.document.getElementsByTagName("script")[0];
-            // criar o script
-            let script = window.document.createElement("script");
-            // definir os atributos
-            script.src = src;
-            script.async = true;
-            script.defer = true;
+    // Função criada para colocar o script do google no html
+    createScript(src) {
+        // Selecionar ponto de referencia
+        let index = window.document.getElementsByTagName("script")[0];
+        // criar o script
+        let script = window.document.createElement("script");
+        // definir os atributos
+        script.src = src;
+        script.async = true;
+        script.defer = true;
 
-            // inserir antes do primeiro script
-            index.parentNode.insertBefore(script, index);
-        }
+        // inserir antes do primeiro script
+        index.parentNode.insertBefore(script, index);
+    }
+
+    render() {
+            return (
+                <div className="container">
+                <header className="header"> Mapa do Bairro </header>
+                 <nav>
+                 <ErrorBoundary>
+                 <Menu
+                 openMenu={this.openMenu.bind(this)}
+                 query={this.state.query}
+                 marcFiltered={this.state.marcFiltered}
+                 updateQuery={this.updateQuery.bind(this)}
+                 openInfoWindow={this.openInfoWindow.bind(this)}
+                 infoWindow={this.state.infoWindow}
+                 markers={this.state.markers}
+                 map={this.state.map}
+                 />
+                </ErrorBoundary>
+                    </nav>
+
+                    <ErrorBoundary>
+                    <Map />
+                    </ErrorBoundary>
+
+                </div>
+                )
+            }
     }
 
     export default App;

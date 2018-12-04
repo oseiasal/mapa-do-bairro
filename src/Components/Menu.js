@@ -1,10 +1,12 @@
 import React from 'react';
 import  PlaceItem  from './PlaceItem';
+import ErrorBoundary from '../catch/ErrorBoundary';
 import '../App.css';
 
 const Menu = ({openMenu, updateQuery, query, marcFiltered, infoWindow, openInfoWindow, markers}) => {
 
         return (
+            <ErrorBoundary>
             <div className="menu-option">
                 <div className="search-container">
                     <div tabIndex="0"  className="menuToggle" onKeyPress={openMenu} >
@@ -24,24 +26,25 @@ const Menu = ({openMenu, updateQuery, query, marcFiltered, infoWindow, openInfoW
                     <div className="list showing">
                         <ul>
                         {query.length > 0 ? (marcFiltered.map((marker, index) => {
-                            return <PlaceItem
+                            return <ErrorBoundary key={index}><PlaceItem
                             infoWindow={infoWindow}
                             key={index}
                             marker={marker}
                             openInfoWindow={openInfoWindow}
-                            />
+                            /></ErrorBoundary>
                         })) : (markers.map((marker, index) => {
-                            return <PlaceItem
+                            return <ErrorBoundary key={index}><PlaceItem
                             infoWindow={infoWindow}
                             key={index}
                             marker={marker}
                             openInfoWindow={openInfoWindow}
-                            />
+                            /></ErrorBoundary>
                         }))}
                         </ul>
                     </div>
                 </div>
             </div>
+            </ErrorBoundary>
         )
     }
 
