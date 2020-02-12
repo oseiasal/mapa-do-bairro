@@ -1,5 +1,5 @@
 // Chave da API do Google Maps
-export const PrivateKey = 'AIzaSyDVOph5H2ON8d7d3maVA_t9UkTTxkRhuZA';
+export const PrivateKey = 'AIzaSyD3_l1chNAJfpvCuBKz7NiiBks7p7IKi9U';
 
 // Chaves da API do FourSquare
 export const ClienteID = 'RPG2KU5WWCUL345BGVBOVBI2UYVKNSRNHCTPOT0LVDRVIZFK';
